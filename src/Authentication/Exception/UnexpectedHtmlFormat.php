@@ -2,8 +2,6 @@
 
 namespace AsyncBot\Driver\StackOverflowChat\Authentication\Exception;
 
-use AsyncBot\DriverStackOverflowChat\Authentication\Exception\Authentication;
-
 class UnexpectedHtmlFormat extends Authentication
 {
     public function __construct(string $element)
