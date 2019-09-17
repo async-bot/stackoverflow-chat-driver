@@ -32,7 +32,7 @@ final class Authenticator
 
             yield (new LogIn($this->httpClient, $this->credentials))->process();
 
-            return yield (new WebSocket($this->httpClient))->getChatParameters();
+            return yield (new WebSocket($this->httpClient, $this->credentials))->getChatParameters();
         });
     }
 }

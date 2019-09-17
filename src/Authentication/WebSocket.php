@@ -12,16 +12,21 @@ use AsyncBot\Driver\StackOverflowChat\Authentication\Exception\NetworkError;
 use AsyncBot\Driver\StackOverflowChat\Authentication\Parser\ChatPage;
 use AsyncBot\Driver\StackOverflowChat\Authentication\ValueObject\ChatLoginParameters;
 use AsyncBot\Driver\StackOverflowChat\Authentication\ValueObject\ChatParameters;
+use AsyncBot\Driver\StackOverflowChat\Authentication\ValueObject\Credentials;
 use function Amp\call;
 use function ExceptionalJSON\decode;
+use function Room11\DOMUtils\domdocument_load_html;
 
 final class WebSocket
 {
     private Client $httpClient;
 
-    public function __construct(Client $httpClient)
+    private Credentials $credentials;
+
+    public function __construct(Client $httpClient, Credentials $credentials)
     {
-        $this->httpClient = $httpClient;
+        $this->httpClient  = $httpClient;
+        $this->credentials = $credentials;
     }
 
     /**
@@ -30,13 +35,13 @@ final class WebSocket
     public function getChatParameters(): Promise
     {
         return call(function () {
-            /** @var ChatLoginParameters $chatParameters */
+            /** @var ChatLoginParameters $chatLoginParameters */
             $chatLoginParameters = yield $this->getChatLoginParameters();
 
             /** @var string $webSocketUrl */
             $webSocketUrl = yield $this->getWebSocketUrl($chatLoginParameters);
 
-            return new ChatParameters($webSocketUrl, $chatLoginParameters->getFKey());
+            return new ChatParameters($webSocketUrl, $chatLoginParameters->getFKey(), $chatLoginParameters->getUser());
         });
     }
 
@@ -46,7 +51,13 @@ final class WebSocket
     private function getChatLoginParameters(): Promise
     {
         return call(function () {
-            $request = new Request('https://chat.stackoverflow.com/rooms/198198/asyncbot-playground');
+            $request = new Request(
+                sprintf(
+                    'https://chat.stackoverflow.com/rooms/%d/%s',
+                    $this->credentials->getRoomId(),
+                    $this->credentials->getRoomSlug(),
+                ),
+            );
 
             try {
                 /** @var Response $response */
@@ -55,7 +66,12 @@ final class WebSocket
                 throw new NetworkError($request, 0, $e);
             }
 
-            return (new ChatPage())->parse(yield $response->getBody()->buffer());
+            $dom = domdocument_load_html(yield $response->getBody()->buffer());
+
+            return new ChatLoginParameters(
+                (new ChatPage())->parse($dom),
+                yield (new UserRetriever($this->httpClient))->retrieve($dom),
+            );
         });
     }
 
@@ -67,15 +83,19 @@ final class WebSocket
         return call(function () use ($parameters) {
             $body = new FormBody();
 
-            $body->addField('roomid', '198198');
+            $body->addField('roomid', (string) $this->credentials->getRoomId());
             $body->addField('fkey', $parameters->getFKey());
 
             $request = new Request('https://chat.stackoverflow.com/ws-auth', 'POST');
 
             $request->setBody($body);
 
-            /** @var Response $response */
-            $response = yield $this->httpClient->request($request);
+            try {
+                /** @var Response $response */
+                $response = yield $this->httpClient->request($request);
+            } catch (HttpException $e) {
+                throw new NetworkError($request, 0, $e);
+            }
 
             if ($response->getStatus() !== 200) {
                 throw new NetworkError($request, $response->getStatus());
@@ -83,7 +103,41 @@ final class WebSocket
 
             $decodedResponse = decode(yield $response->getBody()->buffer(), true);
 
-            return $decodedResponse['url'];
+            return sprintf('%s?l=%d', $decodedResponse['url'], yield $this->getLastMessageId($parameters));
+        });
+    }
+
+    /**
+     * @return Promise<int>
+     */
+    private function getLastMessageId(ChatLoginParameters $parameters): Promise
+    {
+        return call(function () use ($parameters) {
+            $body = new FormBody();
+
+            $body->addField('since', '0');
+            $body->addField('mode', 'Messages');
+            $body->addField('msgCount', '100');
+            $body->addField('fkey', $parameters->getFKey());
+
+            $request = new Request(sprintf('https://chat.stackoverflow.com/chats/%d/events', $this->credentials->getRoomId()), 'POST');
+
+            $request->setBody($body);
+
+            try {
+                /** @var Response $response */
+                $response = yield $this->httpClient->request($request);
+            } catch (HttpException $e) {
+                throw new NetworkError($request, 0, $e);
+            }
+
+            if ($response->getStatus() !== 200) {
+                throw new NetworkError($request, $response->getStatus());
+            }
+
+            $decodedResponse = decode(yield $response->getBody()->buffer(), true);
+
+            return $decodedResponse['time'];
         });
     }
 }

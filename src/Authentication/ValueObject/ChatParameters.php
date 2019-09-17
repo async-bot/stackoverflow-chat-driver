@@ -6,12 +6,15 @@ final class ChatParameters
 {
     private string $webSocketUrl;
 
-    private string $fkey;
+    private string $fKey;
 
-    public function __construct(string $webSocketUrl, string $fkey)
+    private ChatUser $user;
+
+    public function __construct(string $webSocketUrl, string $fKey, ChatUser $user)
     {
         $this->webSocketUrl = $webSocketUrl;
-        $this->fkey         = $fkey;
+        $this->fKey         = $fKey;
+        $this->user         = $user;
     }
 
     public function getWebSocketUrl(): string
@@ -19,8 +22,13 @@ final class ChatParameters
         return $this->webSocketUrl;
     }
 
-    public function getFkey(): string
+    public function getFKey(): string
     {
-        return $this->fkey;
+        return $this->fKey;
+    }
+
+    public function getChatUser(): ChatUser
+    {
+        return $this->user;
     }
 }

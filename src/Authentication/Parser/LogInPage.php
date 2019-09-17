@@ -3,18 +3,18 @@
 namespace AsyncBot\Driver\StackOverflowChat\Authentication\Parser;
 
 use AsyncBot\Driver\StackOverflowChat\Authentication\Exception\UnexpectedHtmlFormat;
-use AsyncBot\Driver\StackOverflowChat\Authentication\ValueObject\MainLoginParameters as ValueObject;
+use AsyncBot\Driver\StackOverflowChat\Authentication\ValueObject\MainLoginParameters;
 use function Room11\DOMUtils\domdocument_load_html;
 
 final class LogInPage
 {
-    public function parse(string $html): ValueObject
+    public function parse(string $html): MainLoginParameters
     {
         $dom = domdocument_load_html($html);
 
         $xpath = new \DOMXPath($dom);
 
-        return new ValueObject($this->getFKeyValue($xpath), $this->getSsrcValue($xpath));
+        return new MainLoginParameters($this->getFKeyValue($xpath), $this->getSsrcValue($xpath));
     }
 
     private function getFKeyValue(\DOMXPath $xpath): string

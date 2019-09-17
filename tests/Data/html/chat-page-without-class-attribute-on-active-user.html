@@ -1,0 +1,234 @@
+
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+    <title>Jeeves&#39; Playground... | chat.stackoverflow.com</title>
+    <link rel="shortcut icon" href="https://cdn.sstatic.net/Sites/stackoverflow/img/favicon.ico?v=dc"><link rel="apple-touch-icon" href="https://cdn.sstatic.net/Sites/stackoverflow/img/apple-touch-icon.png?v=dc"><link rel="search" type="application/opensearchdescription+xml" title="Chat for chat.stackoverflow.com" href="/opensearch.xml">
+
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+
+    <script type="text/javascript" src="//cdn-chat.sstatic.net/chat/Js/master-chat.js?v=5a7ca22729a6"></script>
+
+
+
+    <link rel="stylesheet" href="//cdn-chat.sstatic.net/chat/css/chat.stackoverflow.com.css?v=173eb49161f1">
+    <base target="_blank">
+
+    <script type="text/javascript">
+        function IMAGE(f) { return ("//cdn-chat.sstatic.net/chat/img/" + f); }
+    </script>
+
+</head>
+<body id="chat-body" class="">
+<div id="jplayer"></div>
+<div id="loading"><div id="loading-message">
+    Loading Jeeves&#39; Playground...<br />
+    Just a second&hellip;
+</div></div>
+<div id="container">
+    <div id="feed-ticker" style="display: none;">
+        <div id="feed-ticker-icon"><img src="//cdn-chat.sstatic.net/chat/Img/feed-icon128.png?v=7fa832f0199b" /></div>
+        <div id="dismiss-ticker">dismiss</div>
+        <h2><a rel="noreferrer noopener" href="/rooms/info/100286/jeeves-playground?tab=feeds">New feed items</a></h2>
+        <div id="ticker-items"></div>
+    </div>
+    <span id="getmore" class="button" title="load a few more earlier chat messages">load older messages</span>
+    <span id="getmore-mine" class="button" title="load all chat messages up to the last time I talked in this room">load to my last message</span>
+    <a rel="noopener noreferrer" class="button" href="/transcript/100286" title="view the complete archived chat history for this room">full transcript</a>
+    <a rel="noopener noreferrer" class="button" title="Only show starred messages, and messages to the current user" href="?highlights=true" target="_self">highlights</a>
+    <br /><br />
+    <div id="main">
+        <div class="message-controls">
+            <h2>Message batch operation</h2>
+            <p>
+                Please select the messages you want to act on. Multiple messages can be selected via <span id="message-control-modifier-key">Ctrl</span>-click and/or Shift-click.
+            </p>
+            <p>
+                Then choose the action to perform with the selected messages.
+            </p>
+            <input id="adm-move" title="move the selected posts to a different room" class="button" type="button" value="relocate"/>
+            <span id="sel-cancel" title="cancel message selection and return to normal chat mode" class="button">cancel</span>
+        </div>
+        <div id="chat"></div>
+        <div id="input-area">
+            <div class="input-hint-container"><div class="input-hint"></div></div>
+            <table width="100%" id="input-table"><tbody>
+            <tr>
+                <td rowspan="2" width="64">
+                    <div id="active-user">
+                        <div class="avatar user-gravatar64">
+                            <img height="64" width="64" title="PeeHaa" alt="PeeHaa"
+                                 src="https://i.stack.imgur.com/GLCqP.png?s=64&amp;g=1"
+                                 srcset="https://i.stack.imgur.com/GLCqP.png?s=128&amp;g=1 2x">
+                        </div>
+                    </div>
+                    <div title="You have a reply/mention" id="reply-count" style="visibility:hidden"></div>
+                    <div title="New messages flagged as spam/offensive (in any room)" id="flag-count" style="visibility:hidden"><a rel="noopener noreferrer" href="/admin/flagged">0</a></div>
+                </td>
+                <td class="chat-input" rowspan="2">
+                    <div id="bubble">
+                        <div id="tabcomplete-container">
+                            <ul id="tabcomplete"></ul>
+                        </div>
+                        <div id="inputerror"></div>
+                        <textarea id="input"></textarea>
+                    </div>
+                </td>
+                <td id="chat-buttons">
+                    <button class="button" id="sayit-button">send</button>
+                    <button class="button" id="upload-file">upload&hellip;</button>
+                    <button class="button" id="cancel-editing-button" style="display: none;">cancel editing</button>
+                    <button class="button" id="codify-button" title="Toggle fixed-width formatting (ctrl+k)">fixed font</button>
+                </td>
+                <td id="footer-logo">
+                    <a rel="noreferrer noopener" href="https://stackoverflow.com" title="Stack Overflow"><img style="max-width:150px" src="https://cdn.sstatic.net/Sites/stackoverflow/img/logo.png?v=dc" alt="Stack Overflow"/></a>
+
+                </td>
+            </tr>
+            <tr>
+                <td id="footer-legal" colspan="2" style="vertical-align: bottom; padding-top: 0px;">
+                    <a rel="noopener noreferrer" id="mini-help" href="/faq#formatting">help</a> | <a rel="noopener noreferrer" href="/faq">faq</a> | <a rel="noopener noreferrer" href="https://stackexchange.com/legal">legal</a>
+                    | <a rel="noopener noreferrer" href="https://stackexchange.com/legal/privacy-policy">privacy policy</a> | <a href="#" class="mobile-on">mobile</a>
+                </td>
+            </tr>
+            </tbody></table>
+        </div>
+        <div id="bottom"></div>
+        <div id="sidebar" style=''><div id="sidebar-content" class=''>
+            <div id="info">
+                <div id="sound" title="set audio notification level"></div>
+                <div class="fl">
+                    <a rel="noopener noreferrer" id="allrooms" class="button" href="/">all rooms</a>
+                </div>
+                <form method="get" action="/search">
+                    <input type="text" id="searchbox" name="q"/>
+                    <input type="hidden" name="room" value="100286" />
+                </form>
+                <div style="height:0" class="clear-both">&nbsp;</div>
+                <h1 id="roomtitle" class=''>
+                    <span id="roomname" class=''>Jeeves&#39; Playground...</span>
+                    <span id="toggle-favorite" title="Toggle this as a favorite room" class="favorite-room-vote"> </span>
+                </h1>
+                <div id="roomdesc" class=''></div>
+                <div id="sidebar-menu" class=''>
+                    <a rel="noopener noreferrer" title="leave this room" target="_self" id="leave" href="/chats/leave/100286">leave</a>
+                    (<a rel="noopener noreferrer" title="leave all rooms" id="leaveall" target="_self" href="/chats/leave/all">all</a>) |
+                    <a rel="noopener noreferrer" id="room-menu" title="more options for this room" href="/transcript/100286/jeeves-playground">room&#x25BC;</a> |
+                    <a rel="noopener noreferrer" id="about-room" title="about this room" href="/rooms/info/100286/jeeves-playground">info</a>
+                </div>
+            </div>
+            <div id="widgets">
+                <div class="sidebar-widget">
+                    <ul id="present-users" class="collapsible fixed-max clear-both"><li class="more"></li></ul>
+                </div>
+                <div class="sidebar-widget">
+                    <div class="fr msg-small">other rooms you're in <span class="more"></span></div>
+                    <br class="cboth" />
+                    <ul id="my-rooms" class="collapsible">
+                        <li id="room-11">
+                            <a rel="noreferrer noopener" href="/rooms/11/php" title="switch to PHP" target="_self">PHP</a>
+                            <span class="quickleave" title="leave that room"></span>
+                            <div class="room-info">
+                                <div class="last-message">
+                                    <span class="user-name">NikiC</span>:
+                                    <span class="text">@ircmaxell not sure if changing anything about the php group will work on legal grounds. It likely needs to remain a fixed entity. You&#39;ll likely want a separately named body if you want to have it.</span>
+                                    <div class="time data">
+                                        1568644997
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="sidebar-widget">
+                    <div class="fr msg-small">
+                        <a rel="noopener noreferrer" href="/feeds/rooms/starred/100286"><span class="feed-icon"> </span></a>
+                        starred <span class="more"></span>
+                        <span id="show-all-starred"> / <a rel="noopener noreferrer" href="/rooms/info/100286/jeeves-playground/?tab=stars">show all</a></span>
+                    </div>
+                    <br class="cboth" />
+                    <div id="starred-posts">
+                        <div class="votesummary">
+                            <ul class="collapsible"></ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div></div>
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    SERVER_TIME_OFFSET = 1568644999 - (new Date()).getTime() / 1000;
+    $(function() {
+        if (!CHAT.RoomUsers) {
+            $("#loading-message").empty().html("<span style='color:#a00000'>Cannot start chat</span> because your browser has loaded an outdated JavaScript file.<br/><br>Please <b>reload this page</b> to ensure you have up-to-date data.")
+            return;
+        }
+        var chat = StartChat({
+                sound: {
+                    file: "//cdn-chat.sstatic.net/chat/so.mp3",
+                    vol: 65,
+                    swfPath: "//cdn-chat.sstatic.net/chat"
+                },
+                may_bookmark: true,
+                ws: true,
+                egg: "Cthulu",
+
+                desktopNotify: true
+            },
+            508666,
+            {
+                id: 100286,
+                host: '',
+                deleted: false,
+                frozen: false,
+                is_live_chat: false,
+                live_chat_host_id: 0
+            },
+            ["1995518","1872763","1125394","655295","2112028","2166546","2245751","2667794","1112583","301159","1180728","990192","1328608","1718570","3622030","2050594","3933263","2676090","3395049","2304737","2726058","4107485","5038939","2446890","3336204","5676699","2354952","3077416","5020521","560756","961488","7433763","4183695","1041515","4927379","422252","7740888","7886229","1640606","2805376","1878262"],
+            false,
+            false,
+            {});
+        chat.initFlagSupport(false, 508666, chat.sidebar.noFlags);
+
+
+        CHAT.RoomUsers.initPresent([
+
+
+            {id: 11952917, name: ("AsyncBot"), email_hash: ("!https://i.stack.imgur.com/LiNWD.jpg?s=128&g=1"), reputation: 46, last_post: 1568644981}
+
+
+            ,{id: 3640934, name: ("Statik Stasis"), email_hash: ("!https://i.stack.imgur.com/ARG2m.png?s=128&g=1"), reputation: 163, last_post: 1568643455,is_owner:true }
+
+
+            ,{id: 5764893, name: ("Jeeves"), email_hash: ("!https://i.stack.imgur.com/CpV27.jpg?s=128&g=1"), reputation: 208, last_post: 1568639866,is_owner:true }
+
+        ]);
+
+
+        CHAT.RoomUsers.update(508666, {name: ("PeeHaa"), email_hash: ("!https://i.stack.imgur.com/GLCqP.png?s=128&g=1"), reputation: 51616 ,is_owner:true
+        });
+
+
+    });
+</script>
+
+<script>
+</script>
+
+<noscript>
+    <div class="notification">
+        Welcome to the chat! Unfortunately, you have JavaScript disabled, and thus this chat will not work.
+        If you would like to participate, please enable JavaScript in your browser and reload this page.
+    </div>
+</noscript>
+<input id="fkey" name="fkey" type="hidden" value="xxxyyyzzzfff" />
+</body>
+</html>

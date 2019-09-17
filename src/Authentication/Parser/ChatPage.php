@@ -3,29 +3,22 @@
 namespace AsyncBot\Driver\StackOverflowChat\Authentication\Parser;
 
 use AsyncBot\Driver\StackOverflowChat\Authentication\Exception\UnexpectedHtmlFormat;
-use AsyncBot\Driver\StackOverflowChat\Authentication\ValueObject\ChatLoginParameters;
-use function Room11\DOMUtils\domdocument_load_html;
 
 final class ChatPage
 {
-    public function parse(string $html): ChatLoginParameters
+    public function parse(\DOMDocument $dom): string
     {
-        $dom = domdocument_load_html($html);
-
-        $xpath = new \DOMXPath($dom);
-
-        return new ChatLoginParameters($this->getFKeyValue($xpath));
+        return $this->getFKeyValue($dom);
     }
 
-    private function getFKeyValue(\DOMXPath $xpath): string
+    private function getFKeyValue(\DOMDocument $dom): string
     {
-        /** @var \DOMNodeList $nodeList */
-        $nodeList = $xpath->evaluate('//input[@id="fkey"]');
+        $fKeyElement = $dom->getElementById('fkey');
 
-        if ($nodeList->length !== 1) {
+        if ($fKeyElement === null) {
             throw new UnexpectedHtmlFormat('fkey input');
         }
 
-        return $nodeList->item(0)->getAttribute('value');
+        return $fKeyElement->getAttribute('value');
     }
 }
