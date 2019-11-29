@@ -2,7 +2,8 @@
 
 namespace AsyncBot\Driver\StackOverflowChat\Authentication;
 
-use Amp\Http\Client\Client;
+use Amp\Http\Client\HttpClient;
+use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
 use Amp\Promise;
 use AsyncBot\Driver\StackOverflowChat\Authentication\Exception\UnexpectedHtmlFormat;
@@ -12,9 +13,9 @@ use function Amp\call;
 
 final class UserRetriever
 {
-    private Client $httpClient;
+    private HttpClient $httpClient;
 
-    public function __construct(Client $httpClient)
+    public function __construct(HttpClient $httpClient)
     {
         $this->httpClient = $httpClient;
     }
@@ -58,7 +59,9 @@ final class UserRetriever
     {
         return call(function () use ($userId) {
             /** @var Response $response */
-            $response = yield $this->httpClient->request(sprintf('https://chat.stackoverflow.com/users/%d', $userId));
+            $response = yield $this->httpClient->request(
+                new Request(sprintf('https://chat.stackoverflow.com/users/%d', $userId))
+            );
 
             return (new ChatUserPage())->parse($userId, yield $response->getBody()->buffer());
         });

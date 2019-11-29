@@ -4,7 +4,7 @@ namespace AsyncBot\Driver\StackOverflowChatTest\Fakes\HttpClient;
 
 use Amp\CancellationToken;
 use Amp\Http\Client\ApplicationInterceptor;
-use Amp\Http\Client\Client;
+use Amp\Http\Client\DelegateHttpClient;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
 use Amp\Promise;
@@ -23,7 +23,7 @@ final class ExceptionResponseInterceptor implements ApplicationInterceptor
      *
      * @return Promise<Response>
      */
-    public function request(Request $request, CancellationToken $cancellation, Client $client): Promise
+    public function request(Request $request, CancellationToken $cancellation, DelegateHttpClient $client): Promise
     {
         throw new $this->exception();
     }

@@ -15,7 +15,7 @@
         "php": "^7.4",
         "ext-dom": "*",
         "amphp/amp": "^2.2.0",
-        "amphp/http-client": "^v4.0.0-rc4",
+        "amphp/http-client": "dev-master as 4.0-rc9",
         "amphp/http-client-cookies": "^1.0.0-rc3",
         "amphp/log": "^1.0",
         "amphp/websocket": "^1.0.0-rc1",

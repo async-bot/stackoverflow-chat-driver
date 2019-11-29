@@ -3,7 +3,7 @@
 namespace AsyncBot\Driver\StackOverflowChat\Connection;
 
 use Amp\Http\Client\Body\FormBody;
-use Amp\Http\Client\Client;
+use Amp\Http\Client\HttpClient;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
 use Amp\Loop;
@@ -15,7 +15,7 @@ use function Amp\call;
 
 final class Xhr
 {
-    private Client $httpClient;
+    private HttpClient $httpClient;
 
     private Credentials $credentials;
 
@@ -25,7 +25,7 @@ final class Xhr
 
     private bool $started = false;
 
-    public function __construct(Client $httpClient, Credentials $credentials, ChatParameters $chatParameters, Queue $messageQueue)
+    public function __construct(HttpClient $httpClient, Credentials $credentials, ChatParameters $chatParameters, Queue $messageQueue)
     {
         $this->httpClient     = $httpClient;
         $this->credentials    = $credentials;

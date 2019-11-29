@@ -3,7 +3,7 @@
 namespace AsyncBot\Driver\StackOverflowChat\Authentication;
 
 use Amp\Http\Client\Body\FormBody;
-use Amp\Http\Client\Client;
+use Amp\Http\Client\HttpClient;
 use Amp\Http\Client\HttpException;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
@@ -19,11 +19,11 @@ use function Room11\DOMUtils\domdocument_load_html;
 
 final class WebSocket
 {
-    private Client $httpClient;
+    private HttpClient $httpClient;
 
     private Credentials $credentials;
 
-    public function __construct(Client $httpClient, Credentials $credentials)
+    public function __construct(HttpClient $httpClient, Credentials $credentials)
     {
         $this->httpClient  = $httpClient;
         $this->credentials = $credentials;

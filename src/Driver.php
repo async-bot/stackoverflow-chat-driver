@@ -2,7 +2,7 @@
 
 namespace AsyncBot\Driver\StackOverflowChat;
 
-use Amp\Http\Client\Client;
+use Amp\Http\Client\HttpClient;
 use Amp\Promise;
 use AsyncBot\Core\Driver as DriverInterface;
 use AsyncBot\Driver\StackOverflowChat\Authentication\Authenticator;
@@ -19,7 +19,7 @@ use function Amp\call;
 
 final class Driver implements DriverInterface
 {
-    private Client $httpClient;
+    private HttpClient $httpClient;
 
     private Credentials $credentials;
 
@@ -34,7 +34,7 @@ final class Driver implements DriverInterface
         MessagePostedListener::class => [],
     ];
 
-    public function __construct(Client $httpClient, Credentials $credentials, Authenticator $authenticator)
+    public function __construct(HttpClient $httpClient, Credentials $credentials, Authenticator $authenticator)
     {
         $this->httpClient    = $httpClient;
         $this->credentials   = $credentials;

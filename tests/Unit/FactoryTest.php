@@ -2,7 +2,6 @@
 
 namespace AsyncBot\Driver\StackOverflowChatTest\Unit;
 
-use Amp\Http\Client\Client;
 use AsyncBot\Driver\StackOverflowChat\Authentication\ValueObject\Credentials;
 use AsyncBot\Driver\StackOverflowChat\Driver;
 use AsyncBot\Driver\StackOverflowChat\Factory;
@@ -13,7 +12,6 @@ class FactoryTest extends TestCase
     public function testBuildReturnsDriverInstance(): void
     {
         $factory = new Factory(
-            new Client(),
             new Credentials(
                 'test@example.com',
                 'mysecret',

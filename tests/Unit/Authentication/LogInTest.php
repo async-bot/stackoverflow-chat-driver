@@ -2,7 +2,7 @@
 
 namespace AsyncBot\Driver\StackOverflowChatTest\Unit\Authentication;
 
-use Amp\Http\Client\Client;
+use Amp\Http\Client\HttpClientBuilder;
 use Amp\Http\Client\HttpException;
 use Amp\Loop;
 use AsyncBot\Driver\StackOverflowChat\Authentication\Exception\CaptchaRequired;
@@ -18,105 +18,110 @@ use function Amp\Promise\wait;
 
 class LogInTest extends TestCase
 {
-    private Client $httpClient;
-
-    private LogIn $login;
+    private Credentials $credentials;
 
     public function setUp(): void
     {
-        $this->httpClient = new Client();
-
-        $this->login = new LogIn(
-            $this->httpClient,
-            new Credentials(
-                'test@example.com',
-                'mysecret',
-                'https://chat.stackoverflow.com/rooms/100286/jeeves-playground',
-            ),
+        $this->credentials = new Credentials(
+            'test@example.com',
+            'mysecret',
+            'https://chat.stackoverflow.com/rooms/100286/jeeves-playground',
         );
     }
 
     public function testProcessThrowsOnHttpExceptionWhenTryingToRetrieveTheLoginPage(): void
     {
-        $this->httpClient->addApplicationInterceptor(
+        $httpClient = (new HttpClientBuilder())->intercept(
             new ExceptionResponseInterceptor(new HttpException('Something went wrong')),
-        );
+        )->build();
+
+        $login = new LogIn($httpClient, $this->credentials);
 
         $this->expectException(NetworkError::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage('Network error when requesting https://stackoverflow.com/users/login over GET');
 
-        wait($this->login->process());
+        wait($login->process());
     }
 
     public function testProcessThrowsOnNon200ResponseWhenTryingToRetrieveTheLoginPage(): void
     {
-        $this->httpClient->addApplicationInterceptor(
+        $httpClient = (new HttpClientBuilder())->intercept(
             new ResponseInterceptor('error', 400),
-        );
+        )->build();
+
+        $login = new LogIn($httpClient, $this->credentials);
 
         $this->expectException(NetworkError::class);
         $this->expectExceptionCode(400);
         $this->expectExceptionMessage('Network error when requesting https://stackoverflow.com/users/login over GET');
 
-        wait($this->login->process());
+        wait($login->process());
     }
 
     public function testProcessThrowsOnHttpExceptionWhenTryingToLogIn(): void
     {
-        $this->httpClient->addApplicationInterceptor(
+        $httpClient = (new HttpClientBuilder())->intercept(
             new ConsecutiveResponseInterceptor(
                 new ResponseInterceptor(file_get_contents(TEST_DATA_DIR . '/html/login-page.html')),
                 new ExceptionResponseInterceptor(new HttpException('Something went wrong')),
             ),
-        );
+        )->build();
+
+        $login = new LogIn($httpClient, $this->credentials);
 
         $this->expectException(NetworkError::class);
         $this->expectExceptionCode(0);
         $this->expectExceptionMessage('Network error when requesting https://stackoverflow.com/users/login over POST');
 
-        wait($this->login->process());
+        wait($login->process());
     }
 
     public function testProcessThrowsOnNon302ResponseWhenTryingToLogIn(): void
     {
-        $this->httpClient->addApplicationInterceptor(
+        $httpClient = (new HttpClientBuilder())->intercept(
             new ConsecutiveResponseInterceptor(
                 new ResponseInterceptor(file_get_contents(TEST_DATA_DIR . '/html/login-page.html')),
                 new ResponseInterceptor('error', 403),
             ),
-        );
+        )->build();
+
+        $login = new LogIn($httpClient, $this->credentials);
 
         $this->expectException(InvalidCredentials::class);
 
-        wait($this->login->process());
+        wait($login->process());
     }
 
     public function testProcessThrowsOnCaptchaRequiredResponse(): void
     {
-        $this->httpClient->addApplicationInterceptor(
+        $httpClient = (new HttpClientBuilder())->intercept(
             new ConsecutiveResponseInterceptor(
                 new ResponseInterceptor(file_get_contents(TEST_DATA_DIR . '/html/login-page.html')),
                 new ResponseInterceptor('captcha required', 302),
             ),
-        );
+        )->build();
+
+        $login = new LogIn($httpClient, $this->credentials);
 
         $this->expectException(CaptchaRequired::class);
 
-        wait($this->login->process());
+        wait($login->process());
     }
 
     public function testProcessFinishesWithoutExceptionWhenLogInIsSuccessful(): void
     {
-        $this->httpClient->addApplicationInterceptor(
+        $httpClient = (new HttpClientBuilder())->intercept(
             new ConsecutiveResponseInterceptor(
                 new ResponseInterceptor(file_get_contents(TEST_DATA_DIR . '/html/login-page.html')),
                 new ResponseInterceptor('captcha required', 302, ['location' => 'https://stackoverflow.com/']),
             ),
-        );
+        )->followRedirects(0)->build();
 
-        Loop::run(function () {
-            $promise = $this->login->process();
+        $login = new LogIn($httpClient, $this->credentials);
+
+        Loop::run(function () use ($login) {
+            $promise = $login->process();
 
             $promise->onResolve(function (?\Throwable $e, $value): void {
                 $this->assertNull($e);

@@ -2,15 +2,14 @@
 
 namespace AsyncBot\Driver\StackOverflowChatTest\Fakes\HttpClient;
 
-use Amp\ByteStream\InputStream;
+use Amp\ByteStream\InMemoryStream;
 use Amp\CancellationToken;
 use Amp\Http\Client\ApplicationInterceptor;
-use Amp\Http\Client\Client;
+use Amp\Http\Client\DelegateHttpClient;
 use Amp\Http\Client\Request;
 use Amp\Http\Client\Response;
 use Amp\Promise;
 use Amp\Success;
-use PHPUnit\Framework\MockObject\Generator;
 
 final class ResponseInterceptor implements ApplicationInterceptor
 {
@@ -36,17 +35,12 @@ final class ResponseInterceptor implements ApplicationInterceptor
      *
      * @return Promise<Response>
      */
-    public function request(Request $request, CancellationToken $cancellation, Client $client): Promise
+    public function request(Request $request, CancellationToken $cancellation, DelegateHttpClient $client): Promise
     {
         // phpcs:enable SlevomatCodingStandard.Functions.UnusedParameter.UnusedParameter
-        $body = (new Generator())->getMock(InputStream::class);
+        $body = new InMemoryStream($this->body);
 
-        $body
-            ->method('read')
-            ->willReturnOnConsecutiveCalls(new Success($this->body), new Success(null))
-        ;
-
-        $response = new Response('2.0', $this->statusCode, 'OK', [], $body, $request);
+        $response = new Response('2', $this->statusCode, 'OK', [], $body, $request);
 
         foreach ($this->headers as $key => $value) {
             $response->addHeader($key, $value);
