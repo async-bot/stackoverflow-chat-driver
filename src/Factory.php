@@ -33,6 +33,10 @@ final class Factory
     {
         $cookieInterceptor = new CookieInterceptor(new InMemoryCookieJar());
 
-        return (new HttpClientBuilder())->interceptNetwork($cookieInterceptor)->build();
+        return (new HttpClientBuilder())
+            ->followRedirects(0)
+            ->interceptNetwork($cookieInterceptor)
+            ->build()
+        ;
     }
 }
