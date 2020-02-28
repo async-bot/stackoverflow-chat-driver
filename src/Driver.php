@@ -5,6 +5,7 @@ namespace AsyncBot\Driver\StackOverflowChat;
 use Amp\Http\Client\HttpClient;
 use Amp\Promise;
 use AsyncBot\Core\Driver as DriverInterface;
+use AsyncBot\Core\Message\Node\Message;
 use AsyncBot\Driver\StackOverflowChat\Authentication\Authenticator;
 use AsyncBot\Driver\StackOverflowChat\Authentication\ValueObject\ChatParameters;
 use AsyncBot\Driver\StackOverflowChat\Authentication\ValueObject\Credentials;
@@ -99,7 +100,7 @@ final class Driver implements DriverInterface
      * @return Promise<null>
      * @throws NotConnected
      */
-    public function postMessage(string $message): Promise
+    public function postMessage(Message $message): Promise
     {
         if ($this->xhrClient === null) {
             throw new NotConnected();

@@ -5,6 +5,8 @@ namespace AsyncBot\Driver\StackOverflowChatTest\Unit\Connection;
 use Amp\Http\Client\HttpClientBuilder;
 use Amp\Loop;
 use Amp\Success;
+use AsyncBot\Core\Message\Node\Message;
+use AsyncBot\Core\Message\Node\Text;
 use AsyncBot\Driver\StackOverflowChat\Authentication\ValueObject\ChatParameters;
 use AsyncBot\Driver\StackOverflowChat\Authentication\ValueObject\ChatUser;
 use AsyncBot\Driver\StackOverflowChat\Authentication\ValueObject\Credentials;
@@ -22,6 +24,8 @@ class XhrTest extends TestCase
 
     private ChatParameters $chatParameters;
 
+    private Message $message;
+
     public function setUp(): void
     {
         $this->credentials = new Credentials(
@@ -33,6 +37,8 @@ class XhrTest extends TestCase
         $this->chatParameters = new ChatParameters('ws://127.0.0.1:8009', 'xxxyyyzzzfff', new ChatUser(13, 'AsyncBot'));
 
         $this->messageQueue = $this->createMock(Queue::class);
+
+        $this->message = new Message();
     }
 
     public function testScheduleAddsMessageToQueue(): void
@@ -51,7 +57,7 @@ class XhrTest extends TestCase
                 ->willReturn(new Success())
             ;
 
-            yield $xhrClient->schedule('My message');
+            yield $xhrClient->schedule($this->message);
 
             Loop::stop();
         });
@@ -76,10 +82,10 @@ class XhrTest extends TestCase
             $this->messageQueue
                 ->expects($this->exactly(3))
                 ->method('get')
-                ->willReturnOnConsecutiveCalls(new Success('My message'), new Success(null), new Success(null))
+                ->willReturnOnConsecutiveCalls(new Success($this->message->toString()), new Success(null), new Success(null))
             ;
 
-            yield $xhrClient->schedule('My message');
+            yield $xhrClient->schedule($this->message);
 
             Loop::delay(125, static function (): void {
                 Loop::stop();
@@ -117,10 +123,10 @@ class XhrTest extends TestCase
             $this->messageQueue
                 ->expects($this->exactly(2))
                 ->method('get')
-                ->willReturn(new Success('My message'))
+                ->willReturn(new Success($this->message->toString()))
             ;
 
-            yield $xhrClient->schedule('My message');
+            yield $xhrClient->schedule($this->message);
 
             Loop::delay(1025, static function (): void {
                 Loop::stop();
@@ -153,11 +159,11 @@ class XhrTest extends TestCase
             $this->messageQueue
                 ->expects($this->once())
                 ->method('get')
-                ->willReturn(new Success('My message'))
+                ->willReturn(new Success($this->message->toString()))
             ;
 
-            yield $xhrClient->schedule('My message');
-            yield $xhrClient->schedule('My message');
+            yield $xhrClient->schedule($this->message);
+            yield $xhrClient->schedule($this->message);
 
             Loop::delay(75, static function (): void {
                 Loop::stop();
