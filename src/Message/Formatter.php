@@ -12,6 +12,7 @@ use AsyncBot\Core\Message\Node\Message;
 use AsyncBot\Core\Message\Node\Node;
 use AsyncBot\Core\Message\Node\OrderedList;
 use AsyncBot\Core\Message\Node\Strikethrough;
+use AsyncBot\Core\Message\Node\Tag;
 use AsyncBot\Core\Message\Node\Text;
 use AsyncBot\Core\Message\Node\UnorderedList;
 use AsyncBot\Core\Message\Node\Url;
@@ -73,6 +74,9 @@ final class Formatter
 
             case Url::class:
                 return $this->formatUrl($node);
+
+            case Tag::class:
+                return $this->formatTag($node);
         }
     }
 
@@ -142,5 +146,14 @@ final class Formatter
     private function formatUrl(Url $urlNode): string
     {
         return sprintf('[%s](%s)', $this->formatChildren($urlNode), $urlNode->getAttribute('href')->getValue());
+    }
+
+    private function formatTag(Tag $tagNode): string
+    {
+        if (!$tagNode->hasAttribute('type')) {
+            return sprintf('[tag:%s]', trim($this->formatChildren($tagNode)));
+        }
+
+        return sprintf('[tag-%s:%s]', $tagNode->getAttribute('type'), trim($this->formatChildren($tagNode)));
     }
 }
