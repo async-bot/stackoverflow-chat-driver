@@ -11,11 +11,13 @@ use AsyncBot\Core\Message\Node\Mention;
 use AsyncBot\Core\Message\Node\Message;
 use AsyncBot\Core\Message\Node\Node;
 use AsyncBot\Core\Message\Node\OrderedList;
+use AsyncBot\Core\Message\Node\Separator;
 use AsyncBot\Core\Message\Node\Strikethrough;
 use AsyncBot\Core\Message\Node\Tag;
 use AsyncBot\Core\Message\Node\Text;
 use AsyncBot\Core\Message\Node\UnorderedList;
 use AsyncBot\Core\Message\Node\Url;
+use AsyncBot\Driver\StackOverflowChat\Message\Exception\UnsupportedNode;
 
 final class Formatter
 {
@@ -46,37 +48,54 @@ final class Formatter
     {
         switch (get_class($node)) {
             case Text::class:
+                /** @var Text $node */
                 return $this->formatText($node);
 
             case Bold::class:
+                /** @var Bold $node */
                 return $this->formatBold($node);
 
             case BlockQuote::class:
+                /** @var BlockQuote $node */
                 return $this->formatBlockquote($node);
 
             case Code::class:
+                /** @var Code $node */
                 return $this->formatCode($node);
 
             case Italic::class:
+                /** @var Italic $node */
                 return $this->formatItalic($node);
 
             case Mention::class:
+                /** @var Mention $node */
                 return $this->formatMention($node);
 
             case OrderedList::class:
+                /** @var OrderedList $node */
                 return $this->formatOrderedList($node);
 
             case Strikethrough::class:
+                /** @var Strikethrough $node */
                 return $this->formatStrikethrough($node);
 
             case UnorderedList::class:
+                /** @var UnorderedList $node */
                 return $this->formatUnorderedList($node);
 
             case Url::class:
+                /** @var Url $node */
                 return $this->formatUrl($node);
 
             case Tag::class:
+                /** @var Tag $node */
                 return $this->formatTag($node);
+
+            case Separator::class:
+                return $this->formatSeparator();
+
+            default:
+                throw new UnsupportedNode($node);
         }
     }
 
@@ -155,5 +174,10 @@ final class Formatter
         }
 
         return sprintf('[tag-%s:%s]', $tagNode->getAttribute('type'), trim($this->formatChildren($tagNode)));
+    }
+
+    private function formatSeparator(): string
+    {
+        return ' ・ ';
     }
 }
