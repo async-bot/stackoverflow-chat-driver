@@ -99,4 +99,23 @@ final class Xhr
             });
         });
     }
+
+    /**
+     * @return Promise<null>
+     */
+    private function pinOrUnpinMessage(int $messageId): Promise
+    {
+        return call(function () use ($messageId) {
+            $body = new FormBody();
+
+            $body->addField('fkey', $this->chatParameters->getFKey());
+
+            $request = new Request(sprintf('https://chat.stackoverflow.com/messages/%d/owner-star', $messageId), 'POST');
+
+            $request->setBody($body);
+
+            yield $this->httpClient->request($request);
+
+        });
+    }
 }
